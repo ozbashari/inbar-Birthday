@@ -718,7 +718,7 @@ export default function Day4Reveal({ config, onComplete, isCompleted }) {
           {/* Download real boarding passes */}
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a
-              href="/boarding-inbar.pdf"
+              href="/4601600-SARUSI%20INBAR%20MS.pdf"
               download="כרטיס-טיסה-ענבר.pdf"
               className="action-btn"
               style={{ fontSize: '0.85rem', textDecoration: 'none', padding: '0.55rem 1rem' }}
@@ -726,7 +726,7 @@ export default function Day4Reveal({ config, onComplete, isCompleted }) {
               הכרטיס של ענבר 🎫
             </a>
             <a
-              href="/boarding-oz.pdf"
+              href="/4601600-BASHARI%20OZ%20MR.pdf"
               download="כרטיס-טיסה-עוז.pdf"
               className="action-btn"
               style={{ fontSize: '0.85rem', textDecoration: 'none', padding: '0.55rem 1rem', background: 'var(--color-sky)' }}
