@@ -431,7 +431,7 @@ export default function Day1Verification({ config, onComplete, isCompleted }) {
             הברווז הצהוב שלנו!! 💛
           </h2>
           <p style={{ fontSize: '1rem', fontWeight: '700', color: '#b45309', margin: 0, textAlign: 'center', maxWidth: '260px', lineHeight: '1.5' }}>
-            כמובן שהוא מסתתר במזוודה 🛁<br />חייב לקחת אותו לקפריסין!
+            כמובן שהוא מסתתר במזוודה 🛁<br />חייב לקחת אותו לחופשה!
           </p>
           <span style={{ fontSize: '0.75rem', color: '#d97706', fontWeight: '600', marginTop: '0.5rem' }}>לחצי להמשיך</span>
         </div>

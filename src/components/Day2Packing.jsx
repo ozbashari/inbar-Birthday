@@ -561,7 +561,7 @@ export default function Day2Packing({ onComplete, isCompleted }) {
       {/* Stage 2.4: Shadow Silhouette Match with beach bag packing styling */}
       {subStage === 4 && (
         <div className="shadow-game-wrapper fade-in" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h2 className="section-title">סידור תיק חוף לקפריסין 🏖️</h2>
+          <h2 className="section-title">סידור תיק חוף לחופשה 🏖️</h2>
           <p className="section-description">
             המזוודה מוכנה! כעת סדרי את תיק החוף שלך. התאימי בין כל פריט מימין לצללית שלו משמאל.
           </p>
