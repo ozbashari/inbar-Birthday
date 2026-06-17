@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Settings, X, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw, Settings } from 'lucide-react';
+
+const DAYS = [
+  { value: 1, label: '1', sub: '21.06' },
+  { value: 2, label: '2', sub: '22.06' },
+  { value: 3, label: '3', sub: '23.06' },
+  { value: 4, label: '4', sub: '24.06' },
+];
 
 export default function DebugPanel({
   config,
@@ -16,7 +23,7 @@ export default function DebugPanel({
   day4Completed,
   setDay4Completed
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleConfigChange = (key, value) => {
     const newConfig = { ...config, [key]: value };
@@ -25,224 +32,196 @@ export default function DebugPanel({
   };
 
   return (
-    <div className="debug-panel-container">
-      {/* Floating Toggle Button */}
+    <>
+      {/* Floating side toggle */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`debug-toggle-btn ${isOpen ? 'open' : ''}`}
-        title="לוח בקרה למנהל (עוז)"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 1000,
+          background: 'rgba(15,23,42,0.75)',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '0 8px 8px 0',
+          padding: '10px 6px',
+          cursor: 'pointer',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '4px',
+          backdropFilter: 'blur(8px)',
+          boxShadow: '2px 0 12px rgba(0,0,0,0.15)',
+        }}
+        title="לוח בקרה"
       >
-        {isOpen ? <X size={20} /> : <Settings size={20} />}
+        <Settings size={14} />
+        {open ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
       </button>
 
-      {/* Panel Body */}
-      {isOpen && (
-        <div className="debug-panel glass-card text-right" dir="rtl" style={{ maxHeight: '85vh', overflowY: 'auto' }}>
-          <h3 className="debug-title">⚙️ לוח בקרה לעוז (Debug)</h3>
-          <p className="debug-subtitle">שלוט ביום הפעיל ובערכי הבדיקה של החידות.</p>
-
-          {/* Section 1: Day Override */}
-          <div className="debug-section">
-            <label className="debug-label">היום הפעיל באתר:</label>
-            <div className="debug-day-selector">
-              <button
-                className={`debug-day-btn ${simulatedDay === 'auto' ? 'active' : ''}`}
-                onClick={() => setSimulatedDay('auto')}
-              >
-                אוטומטי
-              </button>
-              <button
-                className={`debug-day-btn ${simulatedDay === 1 ? 'active' : ''}`}
-                onClick={() => setSimulatedDay(1)}
-              >
-                יום 1 (אימות)
-              </button>
-              <button
-                className={`debug-day-btn ${simulatedDay === 2 ? 'active' : ''}`}
-                onClick={() => setSimulatedDay(2)}
-              >
-                יום 2 (אריזה)
-              </button>
-              <button
-                className={`debug-day-btn ${simulatedDay === 3 ? 'active' : ''}`}
-                onClick={() => setSimulatedDay(3)}
-              >
-                יום 3 (אווירה)
-              </button>
-              <button
-                className={`debug-day-btn ${simulatedDay === 4 ? 'active' : ''}`}
-                onClick={() => setSimulatedDay(4)}
-              >
-                יום 4 (כספת)
-              </button>
-            </div>
-          </div>
-
-          {/* Section 1.5: Stage Completion Toggles */}
-          <div className="debug-section">
-            <label className="debug-label">סטטוס השלמת ימים/משחקים:</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '0.4rem' }}>
-              <button
-                className={`debug-day-btn ${day1Completed ? 'active' : ''}`}
-                onClick={() => setDay1Completed(!day1Completed)}
-                style={{ fontSize: '0.75rem', padding: '4px' }}
-              >
-                יום 1 (אימות): {day1Completed ? '✓ הושלם' : '❌ לא הושלם'}
-              </button>
-              <button
-                className={`debug-day-btn ${day2Completed ? 'active' : ''}`}
-                onClick={() => setDay2Completed(!day2Completed)}
-                style={{ fontSize: '0.75rem', padding: '4px' }}
-              >
-                יום 2 (אריזה): {day2Completed ? '✓ הושלם' : '❌ לא הושלם'}
-              </button>
-              <button
-                className={`debug-day-btn ${localStorage.getItem('birthday_day3_game_completed') === 'true' ? 'active' : ''}`}
-                onClick={() => {
-                  const current = localStorage.getItem('birthday_day3_game_completed') === 'true';
-                  localStorage.setItem('birthday_day3_game_completed', String(!current));
-                  window.location.reload(); // Reload to refresh the vibe stage
-                }}
-                style={{ fontSize: '0.75rem', padding: '4px' }}
-              >
-                יום 3 (אווירה): {localStorage.getItem('birthday_day3_game_completed') === 'true' ? '✓ הושלם' : '❌ לא הושלם'}
-              </button>
-              <button
-                className={`debug-day-btn ${day4Completed ? 'active' : ''}`}
-                onClick={() => setDay4Completed(!day4Completed)}
-                style={{ fontSize: '0.75rem', padding: '4px' }}
-              >
-                יום 4 (חשיפה): {day4Completed ? '✓ הושלם' : '❌ לא הושלם'}
-              </button>
-            </div>
-          </div>
-
-          {/* Section 1.6: Envelope Reset Toggles */}
-          <div className="debug-section">
-            <label className="debug-label">מצב מעטפות יומיות (פתיחה):</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem', marginTop: '0.4rem' }}>
-              {[1, 2, 3, 4].map((d) => {
-                const isOpen = envelopeOpenedDay[d];
-                return (
-                  <button
-                    key={d}
-                    className={`debug-day-btn ${isOpen ? 'active' : ''}`}
-                    onClick={() => {
-                      const nextOpened = { ...envelopeOpenedDay, [d]: !isOpen };
-                      setEnvelopeOpenedDay(nextOpened);
-                      localStorage.setItem(`birthday_envelope_opened_day_${d}`, String(!isOpen));
-                    }}
-                    style={{ fontSize: '0.72rem', padding: '4px 2px' }}
-                    title={`קליק לשינוי מצב המעטפה של יום ${d}`}
-                  >
-                    מכתב {d}: {isOpen ? '🔓' : '✉️'}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Section 2: Configurable Answers */}
-          <div className="debug-section">
-            <label className="debug-label">תשובות נכונות לחידות:</label>
-            
-            <div className="debug-field">
-              <span className="debug-field-title">יום הולדת (יום א׳):</span>
-              <input
-                type="text"
-                value={config.birthday}
-                onChange={(e) => handleConfigChange('birthday', e.target.value)}
-                className="debug-input"
-                placeholder="לדוגמה: 20/06"
-              />
-            </div>
-
-            <div className="debug-field">
-              <span className="debug-field-title">שם הנוסעת (VIP):</span>
-              <input
-                type="text"
-                value={config.vipName}
-                onChange={(e) => handleConfigChange('vipName', e.target.value)}
-                className="debug-input"
-                placeholder="שם על כרטיס הטיסה"
-              />
-            </div>
-
-            <div className="debug-field">
-              <span className="debug-field-title">יום היכרות (יום ד׳ שאלון):</span>
-              <input
-                type="text"
-                value={config.anniversaryDate}
-                onChange={(e) => handleConfigChange('anniversaryDate', e.target.value)}
-                className="debug-input"
-                placeholder="לדוגמה: 03/02"
-              />
-            </div>
-
-            <div className="debug-field">
-              <span className="debug-field-title">תאריך חתונה (יום ד׳ שאלון):</span>
-              <input
-                type="text"
-                value={config.weddingDate}
-                onChange={(e) => handleConfigChange('weddingDate', e.target.value)}
-                className="debug-input"
-                placeholder="לדוגמה: 06/09"
-              />
-            </div>
-
-            <div className="debug-field">
-              <span className="debug-field-title">הגיל של עוז:</span>
-              <input
-                type="text"
-                value={config.ozAge}
-                onChange={(e) => handleConfigChange('ozAge', e.target.value)}
-                className="debug-input"
-                placeholder="לדוגמה: 27"
-              />
-            </div>
-
-            <div className="debug-field">
-              <span className="debug-field-title">מספר ילדים מבוקש:</span>
-              <input
-                type="text"
-                value={config.kidsCount}
-                onChange={(e) => handleConfigChange('kidsCount', e.target.value)}
-                className="debug-input"
-                placeholder="לדוגמה: 4"
-              />
-            </div>
-
-            <div className="debug-field">
-              <span className="debug-field-title">קישור ספוטיפיי (יום ג׳):</span>
-              <input
-                type="text"
-                value={config.spotifyLink}
-                onChange={(e) => handleConfigChange('spotifyLink', e.target.value)}
-                className="debug-input"
-                placeholder="כתובת פלייליסט"
-              />
-            </div>
-          </div>
-
-          {/* Section 2.5: Love note written by her */}
-          {localStorage.getItem('birthday_her_self_compliment') && (
-            <div className="debug-section" style={{ background: 'rgba(231, 111, 81, 0.08)', borderRadius: '8px', padding: '8px', marginBottom: '0.75rem' }}>
-              <label className="debug-label" style={{ color: 'var(--color-coral)', margin: '0' }}>💖 מה היא כתבה על עצמה:</label>
-              <p style={{ fontSize: '0.8rem', margin: '4px 0 0 0', fontWeight: '800', fontStyle: 'italic', color: 'var(--color-navy)' }}>
-                "{localStorage.getItem('birthday_her_self_compliment')}"
-              </p>
-            </div>
-          )}
-
-          {/* Section 3: Reset */}
-          <div className="debug-footer" style={{ borderTop: '1px solid rgba(231, 111, 81, 0.1)', paddingTop: '0.75rem', marginTop: '0.75rem' }}>
-            <button onClick={resetState} className="debug-reset-btn">
-              <RotateCcw size={16} />
-              <span>אפס את כל התקדמות המשתמשת</span>
+      {/* Side panel */}
+      {open && (
+        <div
+          dir="rtl"
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 999,
+            background: 'rgba(15,23,42,0.92)',
+            backdropFilter: 'blur(12px)',
+            borderRadius: '0 16px 16px 0',
+            padding: '1rem 1rem 1rem 0.75rem',
+            paddingLeft: '2rem',
+            boxShadow: '4px 0 24px rgba(0,0,0,0.25)',
+            minWidth: '200px',
+            color: '#fff',
+            fontFamily: 'var(--font-primary)',
+          }}
+        >
+          {/* Day switcher */}
+          <p style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(255,255,255,0.5)', margin: '0 0 0.6rem 0', textAlign: 'right' }}>
+            יום פעיל
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.75rem' }}>
+            <button
+              onClick={() => setSimulatedDay('auto')}
+              style={{
+                gridColumn: '1 / -1',
+                padding: '0.45rem',
+                borderRadius: '8px',
+                border: simulatedDay === 'auto' ? '2px solid #38bdf8' : '1px solid rgba(255,255,255,0.15)',
+                background: simulatedDay === 'auto' ? 'rgba(56,189,248,0.2)' : 'rgba(255,255,255,0.07)',
+                color: '#fff',
+                fontFamily: 'var(--font-primary)',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+              }}
+            >
+              אוטומטי (לפי תאריך)
             </button>
+            {DAYS.map(d => (
+              <button
+                key={d.value}
+                onClick={() => setSimulatedDay(d.value)}
+                style={{
+                  padding: '0.5rem 0.25rem',
+                  borderRadius: '8px',
+                  border: simulatedDay === d.value ? '2px solid #fb923c' : '1px solid rgba(255,255,255,0.15)',
+                  background: simulatedDay === d.value ? 'rgba(251,146,60,0.25)' : 'rgba(255,255,255,0.07)',
+                  color: '#fff',
+                  fontFamily: 'var(--font-primary)',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '2px',
+                }}
+              >
+                <span>יום {d.label}</span>
+                <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>{d.sub}</span>
+              </button>
+            ))}
           </div>
+
+          {/* Completion toggles */}
+          <p style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(255,255,255,0.5)', margin: '0 0 0.5rem 0', textAlign: 'right' }}>
+            סטטוס ימים
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', marginBottom: '0.75rem' }}>
+            {[
+              { label: 'יום 1', val: day1Completed, set: setDay1Completed },
+              { label: 'יום 2', val: day2Completed, set: setDay2Completed },
+              { label: 'יום 4', val: day4Completed, set: setDay4Completed },
+            ].map(({ label, val, set }) => (
+              <button
+                key={label}
+                onClick={() => set(!val)}
+                style={{
+                  padding: '0.35rem 0.6rem',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  background: val ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.07)',
+                  color: '#fff',
+                  fontFamily: 'var(--font-primary)',
+                  fontSize: '0.75rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  textAlign: 'right',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>{val ? '✓ הושלם' : '— לא הושלם'}</span>
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Envelope toggles */}
+          <p style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(255,255,255,0.5)', margin: '0 0 0.5rem 0', textAlign: 'right' }}>
+            מעטפות
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.3rem', marginBottom: '0.75rem' }}>
+            {[1, 2, 3, 4].map(d => {
+              const isOpenEnv = envelopeOpenedDay[d];
+              return (
+                <button
+                  key={d}
+                  onClick={() => {
+                    const next = { ...envelopeOpenedDay, [d]: !isOpenEnv };
+                    setEnvelopeOpenedDay(next);
+                    localStorage.setItem(`birthday_envelope_opened_day_${d}`, String(!isOpenEnv));
+                  }}
+                  style={{
+                    padding: '0.35rem 0.25rem',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    background: isOpenEnv ? 'rgba(56,189,248,0.2)' : 'rgba(255,255,255,0.07)',
+                    color: '#fff',
+                    fontFamily: 'var(--font-primary)',
+                    fontSize: '0.7rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {d} {isOpenEnv ? '🔓' : '✉️'}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Reset */}
+          <button
+            onClick={resetState}
+            style={{
+              width: '100%',
+              padding: '0.45rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(239,68,68,0.4)',
+              background: 'rgba(239,68,68,0.15)',
+              color: '#fca5a5',
+              fontFamily: 'var(--font-primary)',
+              fontSize: '0.75rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <RotateCcw size={13} />
+            אפס הכל
+          </button>
         </div>
       )}
-    </div>
+    </>
   );
 }

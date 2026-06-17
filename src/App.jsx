@@ -59,15 +59,18 @@ export default function App() {
     return localStorage.getItem('birthday_day4_completed') === 'true';
   });
 
-  // Calculate actual day of the week:
-  // Sunday (0) -> Day 1, Monday (1) -> Day 2, Tuesday (2) -> Day 3, Wednesday (3) & beyond -> Day 4
+  // Returns the active day based on specific calendar dates:
+  // 21.06.2026 → Day 1, 22.06 → Day 2, 23.06 → Day 3, 24.06+ → Day 4
+  // Before 21.06 → Day 1 (shows as preview/waiting)
   const getCalendarDay = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    if (dayOfWeek === 0) return 1; // Sunday
-    if (dayOfWeek === 1) return 2; // Monday
-    if (dayOfWeek === 2) return 3; // Tuesday
-    return 4; // Wednesday, Thursday, Friday, Saturday
+    const now = new Date();
+    const start = new Date(2026, 5, 21, 0, 0, 0); // 21 June 2026 midnight
+    const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return 1;  // Before June 21
+    if (diffDays === 0) return 1; // June 21
+    if (diffDays === 1) return 2; // June 22
+    if (diffDays === 2) return 3; // June 23
+    return 4;                     // June 24 and beyond
   };
 
   const activeDay = simulatedDay === 'auto' ? getCalendarDay() : simulatedDay;
@@ -200,12 +203,14 @@ export default function App() {
           {daysInfo.map((day) => {
             const isPassed = day.num < activeDay;
             const isActive = day.num === activeDay;
+            const isLocked = day.num > activeDay;
             return (
               <div
                 key={day.num}
-                className={`timeline-step ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}
-                onClick={() => setSimulatedDay(day.num)}
-                title={`עבור ל${day.name}`}
+                className={`timeline-step ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''} ${isLocked ? 'locked' : ''}`}
+                onClick={() => !isLocked && setSimulatedDay(day.num)}
+                title={isLocked ? `יפתח ב-${['21.06','22.06','23.06','24.06'][day.num-1]}` : `עבור ל${day.name}`}
+                style={{ cursor: isLocked ? 'not-allowed' : 'pointer', opacity: isLocked ? 0.45 : 1 }}
               >
                 <div className="step-icon-wrapper">
                   <span className="step-emoji">{day.icon}</span>
@@ -246,7 +251,7 @@ export default function App() {
         </svg>
       </div>
 
-      {/* Admin Panel (Hidden control panel for Oz) */}
+      {/* Admin Panel — always accessible for Oz */}
       <DebugPanel
         config={config}
         setConfig={setConfig}

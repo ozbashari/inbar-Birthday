@@ -1,70 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Cake } from 'lucide-react';
 
-// Flight: 24 June 2026 at 19:10
-function getFlightDate() {
-  return new Date(2026, 5, 24, 19, 10, 0, 0);
-}
+const FLIGHT_DATE   = new Date(2026, 5, 24, 19, 10, 0, 0); // 24 Jun 2026 19:10
+const BIRTHDAY_DATE = new Date(2026, 5, 27,  0,  0, 0, 0); // 27 Jun 2026 00:00
 
-// Birthday: 27 June 2026 at midnight
-function getBirthdayDate() {
-  return new Date(2026, 5, 27, 0, 0, 0, 0);
-}
-
-function pad(n) {
-  return String(n).padStart(2, '0');
-}
+function pad(n) { return String(n).padStart(2, '0'); }
 
 function calcTimeLeft(target) {
-  const diff = target - new Date();
+  const diff = target.getTime() - Date.now();
   if (diff <= 0) return null;
   return {
-    days:    Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours:   Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-    minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-    seconds: Math.floor((diff % (1000 * 60)) / 1000),
+    days:    Math.floor(diff / 86400000),
+    hours:   Math.floor((diff % 86400000) / 3600000),
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000),
   };
 }
 
 export default function CountdownTimer() {
-  const [flightTime, setFlightTime] = useState(() => calcTimeLeft(getFlightDate()));
-  const [birthdayTime, setBirthdayTime] = useState(() => calcTimeLeft(getBirthdayDate()));
+  // Single tick counter — forces a re-render every second.
+  // Time values are computed fresh on each render, never stored in state.
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setFlightTime(calcTimeLeft(getFlightDate()));
-      setBirthdayTime(calcTimeLeft(getBirthdayDate()));
-    }, 1000);
+    const id = setInterval(() => setTick(t => t + 1), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const flightLaunched = !flightTime;
-  const birthdayLaunched = !birthdayTime;
+  const flightTime   = calcTimeLeft(FLIGHT_DATE);
+  const birthdayTime = calcTimeLeft(BIRTHDAY_DATE);
 
-  const flightUnits = flightTime
-    ? [
-        { label: 'ימים',  value: flightTime.days },
-        { label: 'שעות',  value: flightTime.hours },
-        { label: 'דקות',  value: flightTime.minutes },
-        { label: 'שניות', value: flightTime.seconds },
-      ]
-    : [];
+  const flightUnits = flightTime ? [
+    { label: 'ימים',  value: flightTime.days },
+    { label: 'שעות',  value: flightTime.hours },
+    { label: 'דקות',  value: flightTime.minutes },
+    { label: 'שניות', value: flightTime.seconds },
+  ] : [];
 
-  const bdayUnits = birthdayTime
-    ? [
-        { label: 'ימים',  value: birthdayTime.days },
-        { label: 'שעות',  value: birthdayTime.hours },
-        { label: 'דקות',  value: birthdayTime.minutes },
-        { label: 'שניות', value: birthdayTime.seconds },
-      ]
-    : [];
+  const bdayUnits = birthdayTime ? [
+    { label: 'ימים',  value: birthdayTime.days },
+    { label: 'שעות',  value: birthdayTime.hours },
+    { label: 'דקות',  value: birthdayTime.minutes },
+    { label: 'שניות', value: birthdayTime.seconds },
+  ] : [];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%', maxWidth: '650px', margin: '0 auto', boxSizing: 'border-box' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%', maxWidth: '650px', margin: '0 auto', marginBottom: '1rem', boxSizing: 'border-box' }}>
 
-      {/* Flight countdown (main) */}
+      {/* Surprise / flight countdown */}
       <div className="countdown-wrapper glass-card" dir="rtl">
-        {flightLaunched ? (
+        {!flightTime ? (
           <>
             <Sparkles size={24} className="countdown-sparkle-icon launched-icon" />
             <span className="countdown-launched-text">ההפתעה כאן! ✈️🎉</span>
@@ -90,13 +75,13 @@ export default function CountdownTimer() {
         )}
       </div>
 
-      {/* Birthday countdown (secondary — same style, coral tint) */}
+      {/* Birthday countdown — coral tint */}
       <div
         className="countdown-wrapper glass-card"
         dir="rtl"
-        style={{ background: 'rgba(231, 111, 81, 0.06)', borderColor: 'rgba(231, 111, 81, 0.2)' }}
+        style={{ background: 'rgba(231,111,81,0.06)', borderColor: 'rgba(231,111,81,0.2)' }}
       >
-        {birthdayLaunched ? (
+        {!birthdayTime ? (
           <>
             <Cake size={24} className="countdown-sparkle-icon launched-icon" style={{ color: 'var(--color-coral)' }} />
             <span className="countdown-launched-text" style={{ color: 'var(--color-coral)' }}>יום הולדת שמח ענבר! 🎂🎉</span>
